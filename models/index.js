@@ -2,7 +2,7 @@
  * Created by sangmin on 5/6/15.
  */
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://162.243.54.248:27017/slackbottest');
+mongoose.connect('mongodb://localhost/slackbottest');
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'mongodb connection error:'));
 
