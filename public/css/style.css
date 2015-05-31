@@ -1,0 +1,17 @@
+*{
+    box-sizing: border-box;
+}
+
+.svg-icon{
+    vertical-align: middle;
+}
+
+.parallax-container {
+    height: 400px;
+}
+.slack-logo {
+    display: block;
+    background: url("../img/slack_logo.png") center no-repeat;
+    height: 500px;
+    width: 700px;
+}

@@ -3,16 +3,24 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title></title>
+    <link rel="stylesheet" href="/vendors/angular-material/angular-material.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=RobotoDraft:300,400,500,700,400italic">
+    <link href="css/style.css" rel="stylesheet">
 </head>
 <body>
-<div>
-    <a id="logo" ui-sref="home">Stackbot Apps</a>
-    <div id="menu-btn" ng-click="" ng-controller="testController">
-        <span class="bg"></span>
-        <span class="lines"></span>
-    </div>
+<md-content>
+    <md-toolbar class="md-primary md-hue-1">
+        <div class="md-toolbar-tools">
+            <h2>
+                <span>Stackbot</span>
+            </h2>
+        </div>
+
+    </md-toolbar>
     <div ui-view></div>
-</div>
+</md-content>
+
+
 
 
 <!--<script src="js/angular-1.3.15/angular.min.js"></script>-->
@@ -21,10 +29,14 @@
 <!--<script src="js/angular-1.3.15/angular-sanitize.min.js"></script>-->
 <!--<script src="js/angular-1.3.15/angular-animate.min.js"></script>-->
 <!--<script src="js/angular-ui-router.js"></script>-->
-<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+<!--<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>-->
 <script src="/socket.io/socket.io.js"></script>
-<script src="/js/vendors/angular/angular.min.js"></script>
-<script src="/js/vendors/ui-router/release/angular-ui-router.min.js"></script>
+<script src="/vendors/angular/angular.min.js"></script>
+<script src="/vendors/angular-animate/angular-animate.min.js"></script>
+<script src="/vendors/angular-aria/angular-aria.min.js"></script>
+<script src="/vendors/ui-router/release/angular-ui-router.min.js"></script>
+<script src="/vendors/angular-material/angular-material.min.js"></script>
+<!--<script src="/vendors/materialize/dist/js/materialize.js"></script>-->
 <script src="/js/botApp.js"></script>
 
 <script>

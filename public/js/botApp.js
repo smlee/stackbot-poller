@@ -1,7 +1,16 @@
+
 /**
  * Created by sangmin on 5/17/15.
  */
-var botApp = angular.module('botApp', ['ui.router']);
+
+var botApp = angular.module('botApp', ['ui.router','ngMaterial']);
+
+//Angular Material
+botApp.config(function($mdThemingProvider){
+    $mdThemingProvider.theme('default')
+        .primaryPalette('light-blue')
+        .accentPalette('green');
+});
 
 botApp
     .run(function($rootScope, $urlRouter, $state, $stateParams){
@@ -31,13 +40,34 @@ botApp
         $stateProvider
             .state('home',{
                 url: '/',
-                templateUrl: "/partials/home/index.html"
+                templateUrl: "/partials/home/index.html",
+                controller: 'indexController'
             })
             .state('app', {
                 url: '/app',
                 template: "<p> You're logged in!</p>"
             });
         //$locationProvider.html5mode(true);
+});
+
+botApp.constant('AUTH_EVENTS', {
+    loginSuccess: 'auth-login-success',
+    loginFailed: 'auth-login-failed',
+    logoutSuccess: 'auth-logout-success',
+    sessionTimeout: 'auth-session-timeout',
+    notAuthenticated: 'auth-not-authenticated',
+    notAuthorized: 'auth-not-authorized'
+})
+    .constant('USER_ROLES', {
+        all: '*',
+        staff: 'staff',
+        fellow: 'fellow',
+        student: 'student',
+        guest: 'guest'
+    });
+
+botApp.controller('indexController', function($scope){
+
 });
 
 botApp.controller('testController', function($scope, $window){

@@ -2,12 +2,14 @@
  * Created by sangmin on 4/28/15.
  */
 var express = require('express');
+var path = require('path');
 var logger = require('morgan');
 var session = require('express-session');
 var flash = require('connect-flash');
 var swig = require('swig');
 var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
+var sass = require('node-sass-middleware');
 //var ejs = require('ejs');
 
 var passport = require('passport');
@@ -22,6 +24,15 @@ var slack = require('./simple_reverse.js');
 
 // Middleware
 var app = express();
+
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.engine('html', swig.renderFile);
+app.set('view engine', 'html');
+app.set('views', __dirname + '/view');
+
+
 var server = app.listen(3003);
 console.log('Server listening on port 3003');
 var io = require('socket.io').listen(server);
@@ -30,14 +41,6 @@ io.on('connection', function(socket) {
     console.log('Hello, socket connected');
 });
 
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.engine('html', swig.renderFile);
-app.set('view engine', 'html');
-app.set('views', __dirname + '/view');
-app.use(express.static(__dirname + '/public'));
-app.use('/js/vendors', express.static(__dirname + '/bower_components'));
 //Always put session after STATIC!!! can cause client browser to request sessions before cookies are created!!!
 app.use(session({secret: '2C44774A-D649-4D44-9535-46E296EF394F', resave: true, saveUninitialized: true}));
 app.use(passport.initialize());
@@ -45,19 +48,31 @@ app.use(passport.session());
 
 app.use(flash());
 app.use(methodOverride());
+app.use(
+    sass({
+        src: path.join(__dirname, 'assets'),
+        dest: path.join(__dirname, 'public'),
+        debug: true
+    })
+);
+
+console.log(__dirname)
+
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/vendors', express.static(path.join(__dirname, 'bower_components')));
 
 app.use('/', routes(io, passport));
 prepSlackUsers(User);
 
 passport.serializeUser(function(user, done) {
-    console.log('sdsadlfkjas;dfkjs;dlkfj;sldkfj;sladfkj;salfkj;lkjfasdfasdf', user);
+    //console.log('sdsadlfkjas;dfkjs;dlkfj;sldkfladfkj;sajfasdfasdf', user);
     done(null, user.id);
 });
 
 passport.deserializeUser(function (id, done) {
-    console.log('deserializing', id);
+    //console.log('deserializing', id);
     User.findById(id, function(err, user) {
-        console.log(user);
+        //console.log(user);
         done(err, user);
     });
 });
@@ -98,7 +113,7 @@ passport.use(new slackStrategy({
  { provider: 'Slack',
  id: 'U04F6T232',
  displayName: 'sang',
- _raw: '{"ok":true,"url":"https:\\/\\/fullstackacademy.slack.com\\/","team":"Fullstack Academy","user":"sang","team_id":"T024FPYBQ","user_id":"U04F6T232"}',
+ _raw: '{   "ok":true,"url":"https:\\/\\/fullstackacademy.slack.com\\/","team":"Fullstack Academy","user":"sang","team_id":"T024FPYBQ","user_id":"U04F6T232"}',
  _json:
  { ok: true,
  url: 'https://fullstackacademy.slack.com/',

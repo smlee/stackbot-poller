@@ -8,22 +8,27 @@ var User = require('../models').User;
 
 module.exports = function (io, passport) {
 
-    router.get("/", function(request, response) {
-        var slackData = slack.sData;
-        //var img = slackData.getUserByName('sang').profile.image_24;
-        if (slackData.getUserByID('U042XMQM4') === undefined) {
-            request.logout();
-        }
+    router.use(function(req, res, next){
+        console.log('always checking session', req.session);
+        next();
+    })
 
-        response.render('mainPage', {data: slackData.getUserByName('sang').profile});
+    router.get("/", checkAuthenticated, function(request, response) {
+//        var slackData = slack.sData;
+//        //var img = slackData.getUserByName('sang').profile.image_24;
+//        if (slackData.getUserByID('U042XMQM4') === undefined) {
+//            request.logout();
+//        }
+
+        response.render('mainPage', {messages: req.flash('login'), auth: req.session.passport})//, {data: slackData.getUserByName('sang').profile});
 
         //console.log(slackData.users);
-        io.sockets.emit('slack_data', { data: slackData.getUserByName('sang').profile});
+        io.sockets.emit('slack_data')//, { data: slackData.getUserByName('sang').profile});
     });
 
     //authentication
     router.get('/auth/slack', passport.authenticate('slack'));
-    router.get('/auth/slack/cb', passport.authenticate('slack', {successRedirect: '/app', failureRedirect: '/'}));
+    router.get('/auth/slack/cb', passport.authenticate('slack', {successRedirect: '/', failureRedirect: '/'}));
     router.get('/app', checkAuthenticated, function(req, res){
 
         res.render('mainPage');
@@ -76,7 +81,9 @@ module.exports = function (io, passport) {
 };
 
 function checkAuthenticated(req, res, next) {
-    console.log(req);
+    console.log(req.session);
     if (req.isAuthenticated()) return next();
-    res.status(401).send('wtf');
+    req.flash('login', 'Please log in again');
+    console.log('flash', req.flash('login'));
+    res.json({messages: req.flash('login'), auth: req.session.passport})
 };
