@@ -44,8 +44,8 @@ botApp
                 controller: 'indexController'
             })
             .state('app', {
-                url: '/app',
-                template: "<p> You're logged in!</p>"
+                url: '/',
+                templateUrl: "/partials/home/app.html"
             });
         //$locationProvider.html5mode(true);
 });
@@ -65,6 +65,15 @@ botApp.constant('AUTH_EVENTS', {
         student: 'student',
         guest: 'guest'
     });
+botApp.run(function($rootScope, AuthServices, $state){
+    $rootScope.$on('$stateChangeStart', function(event, next, params){
+        console.log(AuthServices.isAuthenticated);
+        if(!AuthServices.isAuthenticated()) {
+            console.log('testing');
+            AuthServices.checkAuthentication();
+        }
+    })
+})
 
 botApp.controller('indexController', function($scope){
 
