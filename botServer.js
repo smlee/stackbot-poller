@@ -17,10 +17,10 @@ var slackStrategy = require('passport-slack').Strategy;
 var User = require('./models/').User;
 var routes = require('./routes/');
 var prepSlackUsers = require('./controllers/userListPrep');
+
 /*
  * Need to refactor ASAP!
  */
-var slack = require('./simple_reverse.js');
 
 // Middleware
 var app = express();
@@ -61,18 +61,15 @@ console.log(__dirname)
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/vendors', express.static(path.join(__dirname, 'bower_components')));
 
-app.use('/', routes(io, passport));
+app.use(routes(io, passport));
 prepSlackUsers(User);
 
 passport.serializeUser(function(user, done) {
-    //console.log('sdsadlfkjas;dfkjs;dlkfj;sldkfladfkj;sajfasdfasdf', user);
     done(null, user.id);
 });
 
 passport.deserializeUser(function (id, done) {
-    //console.log('deserializing', id);
     User.findById(id, function(err, user) {
-        //console.log(user);
         done(err, user);
     });
 });
