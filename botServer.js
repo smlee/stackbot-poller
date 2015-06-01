@@ -65,10 +65,11 @@ app.use(routes(io, passport));
 prepSlackUsers(User);
 
 passport.serializeUser(function(user, done) {
-    done(null, user.id);
+    done(null, user);
 });
 
 passport.deserializeUser(function (id, done) {
+    console.log('id', id);
     User.findById(id, function(err, user) {
         done(err, user);
     });
@@ -93,7 +94,7 @@ passport.use(new slackStrategy({
             }
 
             if (!user){
-                user = new User({slack_id: profile.id, slack_displayName: profile.displayName, slack_user: profile._json.user});
+                user = new User({slack_id: profile.id, slack_displayName: profile.displayName, slack_user: profile._json.user, role: 'Admin'});
                 user.save(function(err){
                     if (err) console.log(err);
                     return done(err, user);

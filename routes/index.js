@@ -13,14 +13,14 @@ module.exports = function (io, passport) {
         next();
     })
 
-    router.get("/", checkAuthenticated, function(request, response) {
+    router.get("/", checkAuthenticated, function(req, res) {
 //        var slackData = slack.sData;
 //        //var img = slackData.getUserByName('sang').profile.image_24;
 //        if (slackData.getUserByID('U042XMQM4') === undefined) {
 //            request.logout();
 //        }
 
-        response.render('mainPage', {messages: req.flash('login'), auth: req.session.passport})//, {data: slackData.getUserByName('sang').profile});
+        res.render('mainPage', {messages: req.flash('login'), auth: req.session})//, {data: slackData.getUserByName('sang').profile});
 
         //console.log(slackData.users);
         io.sockets.emit('slack_data')//, { data: slackData.getUserByName('sang').profile});
@@ -30,14 +30,27 @@ module.exports = function (io, passport) {
     router.get('/auth/slack', passport.authenticate('slack'));
     router.get('/auth/slack/cb', passport.authenticate('slack', {successRedirect: '/', failureRedirect: '/'}));
     router.get('/app', checkAuthenticated, function(req, res){
-
         res.render('mainPage');
+    });
+    router.get('/session', checkAuthenticated, function(req, res){
+        res.json(req.session);
     });
     router.get('/logout', function(req, res){
         req.logout();
         res.redirect('/');
     });
-
+    router.get('/updateMe', checkAuthenticated, function(req, res){
+        var id = req.session.passport.user._id;
+        User.findOne({_id: id}, function(err, user) {
+            var mySlack = slack.sData.getUserByID(user.slack_id);
+            user.first_name = mySlack.profile.first_name;
+            user.last_name = mySlack.profile.last_name;
+            user.slack_profile_pic = mySlack.profile.image_original;
+            user.save(function(err, result){
+                res.json(result);
+            });
+        })
+    })
     router.get('/updateSlack', function(req, res, next){
         var slackUsers = Object.getOwnPropertyNames(slack.sData.users);
         console.log(slackUsers);
@@ -82,8 +95,11 @@ module.exports = function (io, passport) {
 
 function checkAuthenticated(req, res, next) {
     console.log(req.session);
-    if (req.isAuthenticated()) return next();
+    if (req.isAuthenticated()) {
+        res.test = 'test';
+        return next()
+    };
     req.flash('login', 'Please log in again');
     console.log('flash', req.flash('login'));
-    res.json({messages: req.flash('login'), auth: req.session.passport})
+    res.render('mainPage',{messages: req.flash('login'), auth: req.session.passport})
 };

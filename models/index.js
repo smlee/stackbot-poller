@@ -25,6 +25,7 @@ var UserSchema = new mongoose.Schema({
     slack_user: String,
     slack_profile_pic: String,
     codewars_id: String,
+    role: String,
     created: Date
 });
 
